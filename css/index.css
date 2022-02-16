@@ -1,1 +1,166 @@
 @import '../node_modules/normalize.css/normalize.css';
+
+:root {
+	--black: #000000;
+	--lightblack: #333333;
+	--darkgrey: #535353;
+	--grey: #7c7c7c;
+	--lightgrey: #e5e5e5;
+	--darkwhite: #f7f7f7;
+	--white: #ffffff;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.container {
+	max-width: 320px;
+	margin: 0 auto;
+	padding: 8px;
+	position: relative;
+}
+.top__menu {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+.button {
+	padding: 8px;
+	line-height: 19px;
+	color: var(--black);
+	border: 1px solid var(--black);
+}
+.button:hover {
+	cursor: pointer;
+}
+
+/* Settings */
+.settings {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--darkgrey);
+	padding: 106px 24px;
+	opacity: 0;
+	transition: 0.3s;
+}
+.settings__show {
+	opacity: 1;
+	transition: 0.3s;
+}
+.settings__wrapper {
+	background-color: var(--white);
+	padding: 14px 16px;
+	height: 320px;
+}
+.settings__top {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+.settings__top-title {
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+}
+.settings__top-close {
+	font-style: normal;
+	font-weight: normal;
+	font-size: 24px;
+	line-height: 70%;
+	opacity: 0.45;
+	transform: rotate(-45deg);
+	transition: 0.3s;
+}
+.settings__top-close:hover {
+	cursor: pointer;
+	transform: rotate(-135deg);
+	transition: 0.3s;
+}
+.settings-subtitle {
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+	margin-bottom: 16px;
+}
+.form__settings {
+	display: flex;
+	justify-content: center;
+}
+.input__text-settings {
+}
+.form__settings-button {
+}
+/* Settings */
+
+.chat__screen {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: 440px;
+	padding: 8px;
+	color: var(--black);
+	border: 1px solid var(--black);
+	margin-bottom: 8px;
+}
+.message {
+	margin-top: 8px;
+	padding: 8px;
+	background-color: var(--lightgrey);
+}
+.message__my {
+	align-self: flex-end;
+}
+.message__other {
+	align-self: flex-start;
+}
+.message__source {
+}
+.message__text {
+	font-style: normal;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 19px;
+	color: var(--black);
+}
+.message__time {
+	text-align: right;
+	font-style: italic;
+	font-size: 14px;
+	line-height: 16px;
+	color: var(--lightblack);
+}
+.form__chat {
+	display: flex;
+	justify-content: space-between;
+}
+.input__text {
+	line-height: 19px;
+	padding: 8px;
+	border: 1px solid var(--black);
+	width: 100%;
+}
+.input__text::placeholder {
+	color: var(--grey);
+}
+.button__submit {
+	margin-left: 8px;
+	width: 34px;
+	height: 37px;
+	line-height: 19px;
+	background-color: var(--white);
+	border: 1px solid var(--black);
+}
