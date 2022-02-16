@@ -14,7 +14,6 @@
 		<title>Chat</title>
 	</head>
 	<body>
-		<h1>Chat by Dzmitry Dauhaliavets</h1>
 		<div class="container">
 			<div class="top__menu">
 				<div class="button button__settings">Настройки</div>
@@ -39,29 +38,17 @@
 					</div>
 				</div>
 			</div>
-			<div class="chat__screen">
-				<div class="message message__my">
-					<span class="message__source">Я:</span>
-					<span class="message__text">Добрый день!</span>
-					<div class="message__time">18:45</div>
-				</div>
-				<div class="message message__other">
-					<span class="message__source">Собеседник мой:</span>
-					<span class="message__text">Добрый день!</span>
-					<div class="message__time">18:45</div>
-				</div>
-				<div class="message message__other">
-					<span class="message__source">Собеседник мой:</span>
-					<span class="message__text"
-						>А это второе и, кажется, оно очень длинное, чтобы поместиться на
-						одной строке</span
-					>
-					<div class="message__time">18:45</div>
-				</div>
-				<div class="message message__my">
-					<span class="message__source">Я:</span>
-					<span class="message__text">Добрый день!</span>
-					<div class="message__time">18:45</div>
+			<div class="chat__screen-wrapper">
+				<div class="chat__screen">
+					<template id="template">
+						<div class="message message__my">
+							<div class="message__body">
+								<span class="message__source"></span>
+								<div class="message__text"></div>
+							</div>
+							<div class="message__time"></div>
+						</div>
+					</template>
 				</div>
 			</div>
 			<form class="form__chat">
@@ -75,5 +62,6 @@
 				<button class="button__submit form__chat-button" type="submit">-></button>
 			</form>
 		</div>
+		<script src="./scripts/index.js"></script>
 	</body>
 </html>
