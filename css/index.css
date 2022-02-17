@@ -49,8 +49,8 @@ body {
 	cursor: pointer;
 }
 
-/* Settings */
-.settings {
+/* Popup */
+.popup {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -64,28 +64,28 @@ body {
 	transition: 0.3s;
 	z-index: -1;
 }
-.settings__show {
+.popup__show {
 	z-index: 3;
 	opacity: 1;
 	transition: 0.3s;
 }
-.settings__wrapper {
+.popup__wrapper {
 	background-color: var(--white);
 	padding: 14px 16px;
 	height: 320px;
 }
-.settings__top {
+.popup__top {
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 16px;
+	margin-bottom: 20px;
 }
-.settings__top-title {
+.popup__top-title {
 	font-style: normal;
 	font-weight: normal;
 	font-size: 16px;
 	line-height: 19px;
 }
-.settings__top-close {
+.popup__top-close {
 	font-style: normal;
 	font-weight: normal;
 	font-size: 24px;
@@ -94,27 +94,42 @@ body {
 	transform: rotate(-45deg);
 	transition: 0.3s;
 }
-.settings__top-close:hover {
+.popup__top-close:hover {
 	cursor: pointer;
 	transform: rotate(-135deg);
 	transition: 0.3s;
 }
-.settings-subtitle {
+.popup-subtitle {
 	font-style: normal;
 	font-weight: normal;
 	font-size: 16px;
 	line-height: 19px;
-	margin-bottom: 16px;
+	margin-bottom: 8px;
 }
-.form__settings {
+.form__popup {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 }
-.input__text-settings {
+.form__popup-input {
+	line-height: 19px;
+	padding: 8px;
+	border: 1px solid var(--black);
+	width: 100%;
+	margin-bottom: 8px;
 }
-.form__settings-button {
+.form__popup-input::placeholder {
+	color: var(--grey);
 }
-/* Settings */
+.form__popup-button {
+	padding: 8px;
+	line-height: 19px;
+	background-color: var(--white);
+	border: 1px solid var(--black);
+	align-self: baseline;
+}
+/* Popup */
+
 .chat__screen-wrapper {
 	height: 440px;
 	color: var(--black);
@@ -178,7 +193,7 @@ body {
 }
 .button__submit {
 	margin-left: 8px;
-	width: 34px;
+	width: 40px;
 	height: 37px;
 	line-height: 19px;
 	background-color: var(--white);

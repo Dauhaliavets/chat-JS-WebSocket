@@ -18,29 +18,10 @@
 			<div class="top__menu">
 				<div class="button button__settings">Настройки</div>
 				<div class="button button__logout">Выйти</div>
-				<div class="settings">
-					<div class="settings__wrapper">
-						<div class="settings__top">
-							<span class="settings__top-title">Настройки</span>
-							<span class="settings__top-close">+</span>
-						</div>
-						<div class="settings-subtitle">Имя в чате</div>
-						<form class="form__settings">
-							<input
-								class="input__text form__settings-input"
-								type="text"
-								name=""
-								id=""
-								placeholder="Введите Ваше имя"
-							/>
-							<button class="button__submit form__settings-button" type="submit">-></button>
-						</form>
-					</div>
-				</div>
 			</div>
 			<div class="chat__screen-wrapper">
 				<div class="chat__screen">
-					<template id="template">
+					<template id="template__message">
 						<div class="message message__my">
 							<div class="message__body">
 								<span class="message__source"></span>
@@ -61,6 +42,27 @@
 				/>
 				<button class="button__submit form__chat-button" type="submit">-></button>
 			</form>
+			<template id="template__popup">
+				<div class="popup popup__show">
+					<div class="popup__wrapper">
+						<div class="popup__top">
+							<span class="popup__top-title"></span>
+							<span class="popup__top-close"></span>
+						</div>
+						<div class="popup-subtitle"></div>
+						<form class="form__popup">
+							<input
+								class="form__popup-input"
+								type="text"
+								name=""
+								id=""
+								placeholder="Введите Ваше имя"
+							/>
+							<button class="form__popup-button" type="submit"></button>
+						</form>
+					</div>
+				</div>
+			</template>
 		</div>
 		<script src="./scripts/index.js"></script>
 	</body>
