@@ -128,6 +128,9 @@ body {
 	border: 1px solid var(--black);
 	align-self: baseline;
 }
+.form__popup-button:hover {
+	cursor: pointer;
+}
 /* Popup */
 
 .chat__screen-wrapper {
