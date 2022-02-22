@@ -1,32 +1,58 @@
 import Cookies from 'js-cookie';
+import UI from './view';
 
-const UI = {
-	container: document.querySelector('.container'),
-	TOP_MENU: {
-		settingsBtn: document.querySelector('.button__settings'),
-		logoutBtn: document.querySelector('.button__logout'),
-	},
-	POPUP: {
-		templatePopup: document.querySelector('#template__popup'),
-	},
-	CHAT: {
-		display: document.querySelector('.chat__screen'),
-		templateMes: document.querySelector('#template__message'),
-		form: document.querySelector('.form__chat'),
-		formInput: document.querySelector('.form__chat-input'),
-		formBtn: document.querySelector('.form__chat-button'),
-	},
-};
 
 const URL = 'https://chat1-341409.oa.r.appspot.com/api/user';
+const URL_MESSAGES = 'https://chat1-341409.oa.r.appspot.com/api/messages/';
 
 let userName = 'Дима';
 
-// 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvbGdvbGV2ZXRzXzg0OTlAbWFpbC5ydSIsImlhdCI6MTY0NTMwOTUyMCwiZXhwIjoxNjQ1Mzk1OTIwfQ.mfudYNIIdsuMH6deQCG0Gy7P9DrzVzJMh6qisxRMDaU';
+// let messages;
+
+let token;
 
 /* 
 	EventListeners
  */
+window.addEventListener('load', () => {
+	token = Cookies.get('token');
+
+	fetch('https://chat1-341409.oa.r.appspot.com/api/user/me', {
+		method: 'GET',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+	})
+	.then(response => response.json())
+	.then(data => console.log("me: ", data))
+	.catch(console.error)
+
+	fetch(URL_MESSAGES, {
+		method: 'GET',
+		headers: {
+			Accept: 'application/json',
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		if(data.messages.length) {
+			data.messages.forEach(msg => showMessage(msg));
+		}	
+	});
+
+	
+});
+
+function showMessage(msg) {
+	const {username, message, createAt} = msg;
+	const tmpl = generateTemplateMessage(username, message, createAt);
+	UI.CHAT.display.appendChild(tmpl);
+}
+
 UI.CHAT.form.addEventListener('submit', (e) => {
 	e.preventDefault();
 	const inputValue = e.target.firstElementChild.value;
@@ -46,14 +72,14 @@ UI.TOP_MENU.logoutBtn.addEventListener('click', () => createAutorizationPopup())
 /*
 	Functions
 */
-function generateTemplateMessage(source, value, time) {
+function generateTemplateMessage(source, text, time) {
 	const cloneTemplate = UI.CHAT.templateMes.content.cloneNode(true);
 	const textTmpl = cloneTemplate.querySelector('.message__text');
 	const sourceTmpl = cloneTemplate.querySelector('.message__source');
 	const timeTmpl = cloneTemplate.querySelector('.message__time');
 
 	sourceTmpl.textContent = `${source}: `;
-	textTmpl.textContent = value;
+	textTmpl.textContent = text;
 	timeTmpl.textContent = time;
 
 	return cloneTemplate;
@@ -99,7 +125,7 @@ function createSettingsPopup() {
 }
 
 function settingsSubmit(name) {
-	let token = Cookies.get('token');
+	// let token = Cookies.get('token');
 
 	fetch(URL, {
 		method: 'PATCH',
