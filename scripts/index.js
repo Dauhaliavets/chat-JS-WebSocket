@@ -1,57 +1,26 @@
 import Cookies from 'js-cookie';
 import UI from './view';
-
-
-const URL = 'https://chat1-341409.oa.r.appspot.com/api/user';
-const URL_MESSAGES = 'https://chat1-341409.oa.r.appspot.com/api/messages/';
-
-let userName = 'Дима';
-
-// let messages;
+import { END_POINT, sendRequest } from './api';
 
 let token;
+let userName;
 
 /* 
 	EventListeners
  */
-window.addEventListener('load', () => {
-	token = Cookies.get('token');
+window.addEventListener('load', async () => {
+	token = Cookies.get('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvbGdvbGV2ZXRzMjMxMkBnbWFpbC5jb20iLCJpYXQiOjE2NDU1MTEzNzQsImV4cCI6MTY0NTU5Nzc3NH0.D1J2jcHdozc1XaRXMPzMok_431jWC6VomgeYrMbtwdo';
 
-	fetch('https://chat1-341409.oa.r.appspot.com/api/user/me', {
-		method: 'GET',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-	})
-	.then(response => response.json())
-	.then(data => console.log("me: ", data))
-	.catch(console.error)
+	let responseMe = await sendRequest(END_POINT.me, 'GET', token);
+	userName = responseMe.name;
 
-	fetch(URL_MESSAGES, {
-		method: 'GET',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-	})
-	.then(response => response.json())
-	.then(data => {
-		if(data.messages.length) {
-			data.messages.forEach(msg => showMessage(msg));
-		}	
-	});
-
+	let { messages } = await sendRequest(END_POINT.messages, 'GET', token);
+	
+	if(messages.length) {
+		messages.forEach(msg => showMessage(msg));
+	}	
 	
 });
-
-function showMessage(msg) {
-	const {username, message, createAt} = msg;
-	const tmpl = generateTemplateMessage(username, message, createAt);
-	UI.CHAT.display.appendChild(tmpl);
-}
 
 UI.CHAT.form.addEventListener('submit', (e) => {
 	e.preventDefault();
@@ -118,32 +87,14 @@ function createSettingsPopup() {
 		e.preventDefault();
 		let name = e.target[0].value;
 		if (name) {
-			userName = name;
-			settingsSubmit(name)
+			settingsSubmit(name);
 		}
 	});
 }
 
-function settingsSubmit(name) {
-	// let token = Cookies.get('token');
-
-	fetch(URL, {
-		method: 'PATCH',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
-		},
-		body: JSON.stringify({ name: name }),
-	})
-		.then((response) => {
-			if (response.ok) {
-				return response.json();
-			}
-			throw new Error(`Response Error status ${response.status}`);
-		})
-		.then((data) => console.log(data))
-		.catch(console.log());
+async function settingsSubmit(name) {
+	let response = await sendRequest(END_POINT.user, 'PATCH', token, { name: name });
+	userName = response.name;
 }
 
 function createAutorizationPopup() {
@@ -164,29 +115,13 @@ function createAutorizationPopup() {
 	});
 }
 
-function autorizationSubmit(e) {
+async function autorizationSubmit(e) {
 	e.preventDefault();
 	const email = e.target[0].value;
 
-	fetch(URL, {
-		method: 'POST',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({ email: email }),
-	})
-		.then((response) => {
-			if (response.ok) {
-				return response.json();
-			}
-			throw new Error(`Response Error status ${response.status}`);
-		})
-		.then((data) => {
-			console.log(data);
-			console.log('userName in response server:', userName);
-		})
-		.catch(console.log());
+	let responseAuth = await sendRequest(END_POINT.user, 'POST', token, { email: email })
+	console.log('responseAuth: ', responseAuth)
+
 }
 
 function createConfirmPopup() {
@@ -206,33 +141,24 @@ function createConfirmPopup() {
 	});
 }
 
-function confirmSubmit(e) {
+async function confirmSubmit(e) {
 	e.preventDefault();
 	let tokenValue = e.target[0].value;
 	Cookies.set('token', tokenValue);
 
 	token = Cookies.get('token');
 
-	fetch(URL, {
-		method: 'PATCH',
-		headers: {
-			Accept: 'application/json',
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${tokenValue}`,
-		},
-		body: JSON.stringify({ name: userName }),
-	})
-		.then((response) => {
-			if (response.ok) {
-				return response.json();
-			}
-			throw new Error(`Response Error status ${response.status}`);
-		})
-		.then((data) => console.log(data))
-		.catch(console.log());
+	let responseConfirm = await sendRequest(END_POINT.user, 'PATCH', token, { name: userName })
+	console.log('responseConfirm: ', responseConfirm)
 }
 
 function removePopup() {
 	const popup = document.querySelector('.popup__show');
 	UI.container.removeChild(popup);
+}
+
+function showMessage(msg) {
+	const {username, message, createAt} = msg;
+	const tmpl = generateTemplateMessage(username, message, createAt);
+	UI.CHAT.display.appendChild(tmpl);
 }
