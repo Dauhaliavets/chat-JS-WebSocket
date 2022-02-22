@@ -2,47 +2,48 @@ import Cookies from 'js-cookie';
 import UI from './view';
 import { END_POINT, sendRequest } from './api';
 
-let token;
+let token = Cookies.get('token');
 let userName;
+let userMail;
 
-/* 
-	EventListeners
- */
-window.addEventListener('load', async () => {
-	token = Cookies.get('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvbGdvbGV2ZXRzMjMxMkBnbWFpbC5jb20iLCJpYXQiOjE2NDU1MTEzNzQsImV4cCI6MTY0NTU5Nzc3NH0.D1J2jcHdozc1XaRXMPzMok_431jWC6VomgeYrMbtwdo';
+const socket = new WebSocket(
+	`ws://chat1-341409.oa.r.appspot.com/websockets?${token}`
+);
 
-	let responseMe = await sendRequest(END_POINT.me, 'GET', token);
-	userName = responseMe.name;
+socket.onopen = function () {
+	console.log(`[open]`);
 
-	let { messages } = await sendRequest(END_POINT.messages, 'GET', token);
-	
-	if(messages.length) {
-		messages.forEach(msg => showMessage(msg));
-	}	
-	
-});
-
-UI.CHAT.form.addEventListener('submit', (e) => {
-	e.preventDefault();
-	const inputValue = e.target.firstElementChild.value;
-	const date = new Date();
-	const timeSubmit = date.toTimeString().slice(0, 9);
-
-	const tmpl = generateTemplateMessage(userName, inputValue, timeSubmit);
-	UI.CHAT.display.appendChild(tmpl);
-
-	e.target.firstElementChild.value = '';
-	UI.CHAT.display.scrollIntoView(0, UI.CHAT.display.scrollHeight);
-});
-
-UI.TOP_MENU.settingsBtn.addEventListener('click', () => createSettingsPopup());
-UI.TOP_MENU.logoutBtn.addEventListener('click', () => createAutorizationPopup());
-
+	socket.onmessage = function (e) {
+		console.log(`[message]`);
+		console.log(`message ${e.data}`);
+		showMessageWS(e.data);
+	};
+};
 /*
 	Functions
 */
-function generateTemplateMessage(source, text, time) {
+async function initialize() {
+	let responseMe = await sendRequest(END_POINT.me, 'GET', token);
+	userName = responseMe.name;
+	userMail = responseMe.email;
+
+	// let { messages } = await sendRequest(END_POINT.messages, 'GET', token);
+
+	// if (messages.length) {
+	// 	messages.forEach((msg) => showMessage(msg));
+	// }
+}
+
+initialize();
+
+function generateTemplateMessage(source, text, time, isMe) {
 	const cloneTemplate = UI.CHAT.templateMes.content.cloneNode(true);
+	const messageTmpl = cloneTemplate.querySelector('.message');
+	if (isMe) {
+		messageTmpl.classList.add('message__my');
+	} else {
+		messageTmpl.classList.add('message__other');
+	}
 	const textTmpl = cloneTemplate.querySelector('.message__text');
 	const sourceTmpl = cloneTemplate.querySelector('.message__source');
 	const timeTmpl = cloneTemplate.querySelector('.message__time');
@@ -93,7 +94,9 @@ function createSettingsPopup() {
 }
 
 async function settingsSubmit(name) {
-	let response = await sendRequest(END_POINT.user, 'PATCH', token, { name: name });
+	let response = await sendRequest(END_POINT.user, 'PATCH', token, {
+		name: name,
+	});
 	userName = response.name;
 }
 
@@ -116,12 +119,12 @@ function createAutorizationPopup() {
 }
 
 async function autorizationSubmit(e) {
-	e.preventDefault();
 	const email = e.target[0].value;
 
-	let responseAuth = await sendRequest(END_POINT.user, 'POST', token, { email: email })
-	console.log('responseAuth: ', responseAuth)
-
+	let responseAuth = await sendRequest(END_POINT.user, 'POST', token, {
+		email: email,
+	});
+	console.log('responseAuth: ', responseAuth);
 }
 
 function createConfirmPopup() {
@@ -136,20 +139,22 @@ function createConfirmPopup() {
 	closeBtnTmpl.addEventListener('click', removePopup);
 
 	formTmpl.addEventListener('submit', (e) => {
+		e.preventDefault();
 		confirmSubmit(e);
 		removePopup();
 	});
 }
 
 async function confirmSubmit(e) {
-	e.preventDefault();
 	let tokenValue = e.target[0].value;
 	Cookies.set('token', tokenValue);
 
 	token = Cookies.get('token');
 
-	let responseConfirm = await sendRequest(END_POINT.user, 'PATCH', token, { name: userName })
-	console.log('responseConfirm: ', responseConfirm)
+	let responseConfirm = await sendRequest(END_POINT.user, 'PATCH', token, {
+		name: userName,
+	});
+	console.log('responseConfirm: ', responseConfirm);
 }
 
 function removePopup() {
@@ -158,7 +163,38 @@ function removePopup() {
 }
 
 function showMessage(msg) {
-	const {username, message, createAt} = msg;
+	const { username, message, createAt } = msg;
 	const tmpl = generateTemplateMessage(username, message, createAt);
 	UI.CHAT.display.appendChild(tmpl);
 }
+
+function showMessageWS(data) {
+	const { user, text, createdAt } = JSON.parse(data);
+	let isMe = userMail === user.email;
+
+	const tmpl = generateTemplateMessage(user.name, text, createdAt, isMe);
+	UI.CHAT.display.appendChild(tmpl);
+
+	UI.CHAT.wrapper.scrollTo({
+		top: UI.CHAT.display.scrollHeight,
+		left: 0,
+		behavior: 'smooth'
+	});
+}
+
+/* 
+	EventListeners
+ */
+
+UI.CHAT.form.addEventListener('submit', (e) => {
+	e.preventDefault();
+	const textInput = e.target.firstElementChild.value;
+
+	socket.send(JSON.stringify({ text: `${textInput}` }));
+
+	e.target.firstElementChild.value = '';
+
+});
+
+UI.TOP_MENU.settingsBtn.addEventListener('click', createSettingsPopup);
+UI.TOP_MENU.logoutBtn.addEventListener('click', createAutorizationPopup);

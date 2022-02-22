@@ -24,7 +24,7 @@ body {
 }
 
 .container {
-	max-width: 320px;
+	max-width: 400px;
 	margin: 0 auto;
 	padding: 14px;
 	position: relative;
@@ -169,8 +169,8 @@ body {
 	max-width: 100%;
 	font-style: normal;
 	font-weight: normal;
-	font-size: 16px;
-	line-height: 19px;
+	font-size: 14px;
+	line-height: 16px;
 	color: var(--black);
 	word-wrap: break-word;
 }

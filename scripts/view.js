@@ -8,6 +8,7 @@ const UI = {
 		templatePopup: document.querySelector('#template__popup'),
 	},
 	CHAT: {
+		wrapper: document.querySelector('.chat__screen-wrapper'),
 		display: document.querySelector('.chat__screen'),
 		templateMes: document.querySelector('#template__message'),
 		form: document.querySelector('.form__chat'),
