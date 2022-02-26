@@ -22,6 +22,10 @@ async function sendRequest(endPoint, method, token, body) {
 		options.body = JSON.stringify(body);
 	}
 
+	// console.log('requestUrl: ', requestUrl);
+	// console.log('options: ', options);
+
+
 	return await fetch(requestUrl, options)
 		.then((response) => {
 			if (response.ok) {

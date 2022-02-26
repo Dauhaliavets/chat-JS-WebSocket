@@ -2,9 +2,11 @@ import Cookies from 'js-cookie';
 import UI from './view';
 import { END_POINT, sendRequest } from './api';
 
-let token = Cookies.get('token');
+let token = Cookies.get('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRvbGdvbGV2ZXRzMjMxMkBnbWFpbC5jb20iLCJpYXQiOjE2NDU2ODUzNjEsImV4cCI6MTY0NjEzMTc2MX0.HrgaVnTlkralSZToazspGotnzTj-i4dlZh8XG8IBaXA';
 let userName;
 let userMail;
+
+// console.log(token)
 
 const socket = new WebSocket(
 	`ws://chat1-341409.oa.r.appspot.com/websockets?${token}`
@@ -23,15 +25,18 @@ socket.onopen = function () {
 	Functions
 */
 async function initialize() {
+	// console.log(token);
 	let responseMe = await sendRequest(END_POINT.me, 'GET', token);
 	userName = responseMe.name;
 	userMail = responseMe.email;
 
-	// let { messages } = await sendRequest(END_POINT.messages, 'GET', token);
+	let { messages } = await sendRequest(END_POINT.messages, 'GET', token);
 
-	// if (messages.length) {
-	// 	messages.forEach((msg) => showMessage(msg));
-	// }
+	console.log('messages: ', messages);
+
+	if (messages.length) {
+		messages.forEach((msg) => showMessage(msg));
+	}
 }
 
 initialize();
@@ -163,8 +168,8 @@ function removePopup() {
 }
 
 function showMessage(msg) {
-	const { username, message, createAt } = msg;
-	const tmpl = generateTemplateMessage(username, message, createAt);
+	const { user, text, createAt } = msg;
+	const tmpl = generateTemplateMessage(user.name, text, createAt);
 	UI.CHAT.display.appendChild(tmpl);
 }
 
@@ -174,6 +179,10 @@ function showMessageWS(data) {
 
 	const tmpl = generateTemplateMessage(user.name, text, createdAt, isMe);
 	UI.CHAT.display.appendChild(tmpl);
+
+	console.log('wrapper.scrollHeight: ', UI.CHAT.wrapper.scrollHeight)
+	console.log('display.scrollHeight: ', UI.CHAT.display.scrollHeight)
+
 
 	UI.CHAT.wrapper.scrollTo({
 		top: UI.CHAT.display.scrollHeight,
@@ -185,6 +194,12 @@ function showMessageWS(data) {
 /* 
 	EventListeners
  */
+
+UI.CHAT.wrapper.addEventListener('scroll', (e) => {
+	console.log('scrollHeight:', e.target.scrollHeight);
+	console.log('scrollTop:', e.target.scrollTop);
+
+})
 
 UI.CHAT.form.addEventListener('submit', (e) => {
 	e.preventDefault();
